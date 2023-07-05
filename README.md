@@ -16,8 +16,8 @@ This repository contains multiple samples that demonstrate how to use the <a hre
 
 | Sample | Description |
 |---|---|
-| [HelloWorld\NormalizeAnImage](Samples\HelloWorld\NormalizeAnImage) | This sample demonstrates the simplest way to normalize an image and save the result as a new image. |
-| [HelloWorld\NormalizeMultipleImages](Samples\HelloWorld\NormalizeMultipleImages) | This sample demonstrates the simplest way to normalize image files in a directory and save the result as new images. |
+| [NormalizeAnImage](Samples/HelloWorld/NormalizeAnImage) | This sample demonstrates the simplest way to normalize an image and save the result as a new image. |
+| [NormalizeMultipleImages](Samples/HelloWorld/NormalizeMultipleImages) | This sample demonstrates the simplest way to normalize image files in a directory and save the result as new images. |
 
 ## License
 
