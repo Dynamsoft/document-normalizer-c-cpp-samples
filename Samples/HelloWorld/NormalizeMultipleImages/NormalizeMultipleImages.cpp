@@ -47,7 +47,7 @@ class MyResultReceiver : public CCapturedResultReceiver
 public:
 	virtual void OnNormalizedImagesReceived(const CNormalizedImagesResult* pResult)
 	{
-		const CFileImageTag *tag = dynamic_cast<const CFileImageTag*>(pResult->GetSourceImageTag());
+		const CFileImageTag *tag = dynamic_cast<const CFileImageTag*>(pResult->GetOriginalImageTag());
 
 		cout << "File: " << tag->GetFilePath() << endl;
 
@@ -58,7 +58,7 @@ public:
 		else
 		{
 			CImageManager manager;
-			int lCount = pResult->GetCount();
+			int lCount = pResult->GetItemsCount();
 			cout << "Normalized " << lCount << " documents" << endl;
 			for (int li = 0; li < lCount; ++li)
 			{
