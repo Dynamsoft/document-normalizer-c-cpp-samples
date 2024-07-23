@@ -1,5 +1,5 @@
-#include<iostream>
-#include<string>
+#include <iostream>
+#include <string>
 
 #include "../../../Include/DynamsoftCaptureVisionRouter.h"
 #include "../../../Include/DynamsoftUtility.h"
@@ -29,52 +29,61 @@ int main()
 	char error[512];
 
 	// 1.Initialize license.
-	// You can request and extend a trial license from https://www.dynamsoft.com/customer/license/trialLicense?product=ddn&utm_source=samples
+	// You can request and extend a trial license from https://www.dynamsoft.com/customer/license/trialLicense?product=ddn&utm_source=samples&package=c_cpp
 	// The string 'DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9' here is a free public trial license. Note that network connection is required for this license to work.
 	errorcode = CLicenseManager::InitLicense("DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9", error, 512);
-
-	cout << "License initialization: " << errorcode << "," << error << endl;
-
-	// 2.Create an instance of CCaptureVisionRouter.
-	CCaptureVisionRouter *router = new CCaptureVisionRouter;
-
-	// 3.Normalize an image
-	string imageFile = "../../../Images/sample-image.png";
-	CCapturedResult* result = router->Capture(imageFile.c_str(), CPresetTemplate::PT_DETECT_AND_NORMALIZE_DOCUMENT);
-	
-	cout << "File: " << imageFile << endl;
-
-	if (result->GetErrorCode() != 0) {
-		cout << "Error: " << result->GetErrorCode() << "," << result->GetErrorString() << endl;
+	if (errorcode != ErrorCode::EC_OK && errorcode != ErrorCode::EC_LICENSE_CACHE_USED)
+	{
+		cout << "License initialization failed: ErrorCode: " << errorcode << ", ErrorString: " << error << endl;
 	}
+	else
+	{
+		// 2.Create an instance of CCaptureVisionRouter.
+		CCaptureVisionRouter *router = new CCaptureVisionRouter;
 
-	int count = result->GetItemsCount();
-	cout << "Normalized " << count << " documents" << endl;
-	for (int i = 0; i < count; i++) {
-		const CCapturedResultItem* item = result->GetItem(i);
+		// 3.Normalize an image
+		string imageFile = "../../../Images/sample-image.png";
+		CCapturedResult *result = router->Capture(imageFile.c_str(), CPresetTemplate::PT_DETECT_AND_NORMALIZE_DOCUMENT);
 
-		CapturedResultItemType type = item->GetType();
-		if (type == CapturedResultItemType::CRIT_NORMALIZED_IMAGE) {
-			const CNormalizedImageResultItem* normalizedImage = dynamic_cast<const CNormalizedImageResultItem*>(item);
+		cout << "File: " << imageFile << endl;
 
-			string outPath = "normalizedResult_";
-			outPath += to_string(i) + ".png";
+		if (result->GetErrorCode() != 0)
+		{
+			cout << "Error: " << result->GetErrorCode() << "," << result->GetErrorString() << endl;
+		}
 
-			CImageManager manager;
+		CNormalizedImagesResult *normalizedResult = result->GetNormalizedImagesResult();
+		if (normalizedResult == nullptr || normalizedResult->GetItemsCount() == 0)
+		{
+			cout << "No document found." << endl;
+		}
+		else
+		{
+			int count = normalizedResult->GetItemsCount();
+			cout << "Normalized " << count << " documents" << endl;
+			for (int i = 0; i < count; i++)
+			{
+				const CNormalizedImageResultItem *normalizedImage = normalizedResult->GetItem(i);
+				string outPath = "normalizedResult_";
+				outPath += to_string(i) + ".png";
 
-			// 4.Save normalized image to file.
-			errorcode = manager.SaveToFile(normalizedImage->GetImageData(), outPath.c_str());
-			if (errorcode == 0) {
-				cout << "Document " << i << " file: " << outPath << endl;
+				CImageManager manager;
+
+				// 4.Save normalized image to file.
+				errorcode = manager.SaveToFile(normalizedImage->GetImageData(), outPath.c_str());
+				if (errorcode == 0)
+				{
+					cout << "Document " << i << " file: " << outPath << endl;
+				}
 			}
 		}
+		// 5. Release the allocated memory.
+		if (normalizedResult)
+			normalizedResult->Release();
+		if (result)
+			result->Release();
+		delete router, router = NULL;
 	}
-
-	// 5. Release the allocated memory.
-	if (result)
-		result->Release();
-	delete router, router = NULL;
-	
 
 	return 0;
 }
